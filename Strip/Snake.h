@@ -60,6 +60,7 @@ private:
 	SnakeContainer m_snakeBody;	// Segment vector
 	int m_size; // Size of the graphics.
 	Direction m_dir; // Current direction
+	int m_speed; // Speed of the snake
 	int m_lives; // Lives
 	int m_score; // Score
 	bool m_lost; // Losing state
