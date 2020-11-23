@@ -16,7 +16,7 @@ public:
 	World(Vector2u l_windSize);
 	~World();
 
-	int GetblockSize();
+	int GetBlockSize();
 
 	void RespawnApple();
 
@@ -25,7 +25,7 @@ public:
 	void Render(RenderWindow& l_window);
 
 private:
-	Vector2u m_windowsize;
+	Vector2u m_windowSize;
 	Vector2i m_item; // keeps track of the apple's coordinates 
 	int m_blockSize;
 

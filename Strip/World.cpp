@@ -56,6 +56,8 @@ void World::RespawnApple()
 		m_item.y * m_blockSize);
 }
 
+
+// if player's position is same as apple, extend, increase score, re-spawn apple. 
 void World::Update(Snake& l_player)
 {
 	if (l_player.GetPosition() == m_item) {
@@ -64,9 +66,9 @@ void World::Update(Snake& l_player)
 		RespawnApple();
 	}
 
-
+	// if player is outside boundaries, call lose. 
 	int gridSize_x = m_windowSize.x / m_blockSize;
-	int gridSize_y = m_windowSize.y / ;
+	int gridSize_y = m_windowSize.y / m_blockSize;
 
 
 	if (l_player.GetPosition().x <= 0 || l_player.GetPosition().y <= 0 ||
@@ -74,6 +76,19 @@ void World::Update(Snake& l_player)
 	{
 		l_player.Lose();
 	}
+}
+
+void World::Render(RenderWindow& l_window)
+{
+	for (int i = 0; i < 4; ++i) {
+		l_window.draw(m_bounds[i]);
+	}
+	l_window.draw(m_appleShape);
+}
+
+int World::GetBlockSize()
+{
+	return m_blockSize;
 }
 
 
