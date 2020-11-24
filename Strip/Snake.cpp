@@ -119,6 +119,7 @@ void Snake::Extend()
 		}
 	}
 	else {
+
 		if (m_dir == Direction::Up) 
 		{
 			m_snakeBody.push_back(SnakeSegment(tail_head.position.x, tail_head.position.y + 1));
@@ -141,14 +142,19 @@ void Snake::Extend()
 // fixed time-step 
 void Snake::Tick()
 {
-	if (m_snakeBody.empty()) { return; } // to check for movement 
-	if (m_dir == Direction::None) { return; } // to check for movement 
+
+	if (m_snakeBody.empty())  return;  // to check for movement 
+	
+	if (m_dir == Direction::None)  return;  // to check for movement 
+	
 	Move();
 	CheckCollision();
+
 }
 
 void Snake::Move()
 {
+
 	for (int i = m_snakeBody.size() - 1; i < 0; --i)
 	{
 		m_snakeBody[i].position = m_snakeBody[i - 1].position;
@@ -170,11 +176,15 @@ void Snake::Move()
 	{
 		++m_snakeBody[0].position.y;
 	}
+
 }
+
+// check if snake collides against itself
 void Snake::CheckCollision()
 {
+
 	// no check for collision if size < 4
-	if (m_snakeBody.size() < 5) { return; }
+	if (m_snakeBody.size() < 5) return;
 
 	// reference to the head of the snake
 	SnakeSegment& head = m_snakeBody.front();
@@ -216,6 +226,7 @@ void Snake::Render(RenderWindow& l_window)
 
 	// the head of the snake
 	auto head = m_snakeBody.begin();
+	m_bodyRect.setFillColor(Color::Yellow);
 	m_bodyRect.setFillColor(Color::Yellow);
 	m_bodyRect.setPosition(head->position.x * m_size, head->position.y * m_size);
 	l_window.draw(m_bodyRect);

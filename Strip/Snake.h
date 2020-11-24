@@ -4,13 +4,21 @@
 #include <string>
 #include <vector>
 
+#include "SFML/Graphics.hpp"
+#include <string>
+
 
 using namespace std;
 using namespace sf;
 
 
 struct SnakeSegment {
-	SnakeSegment (int x, int y) : position(x, y){}
+	SnakeSegment (int x, int y) 
+		: position(x, y)
+	{
+
+	}
+
 	Vector2i position;
 };
 
@@ -20,10 +28,12 @@ enum class Direction {None, Up, Down, Left, Right };
 
 Direction ::Direction ()
 {
+	
 }
 
 Direction ::~Direction ()
 {
+
 }
 
 class Snake

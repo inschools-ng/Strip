@@ -1,13 +1,11 @@
 #pragma once
+
 #include "SFML/Graphics.hpp"
 #include <string>
-#include <vector>
 
 
 using namespace std;
 using namespace sf;
-
-
 
 
 class World
@@ -25,6 +23,7 @@ public:
 	void Render(RenderWindow& l_window);
 
 private:
+
 	Vector2u m_windowSize;
 	Vector2i m_item; // keeps track of the apple's coordinates 
 	int m_blockSize;

@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "World.h"
+#include "Snake.h"
+#include "Window.h"
+
 
 #include <vector>
 
