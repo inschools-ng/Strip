@@ -1,13 +1,7 @@
+#include "pch.h"
 #include "game.h"
-#include "Snake.h"
-#include "Window.h"
-#include "World.h"
-
 #include <ctime>
 #include <cstdlib>
-
-#include "SFML/Graphics.hpp"
-#include <string>
 
 int main(int argc, void** argv[])
 {

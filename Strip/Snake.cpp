@@ -1,38 +1,15 @@
 #include "pch.h"
 #include "Snake.h"
 
-#include <vector>
-using namespace sf;
-using namespace std;
-
-
-// Constructor takes one argument - size of graphics.
-// RectangleShape member - bodyRect indicates size adjustment in segments of 1 pixel.
-// Reset moves snake into its starting position. 
 Snake::Snake(int l_blockSize)
 {
 	m_size = l_blockSize;
-	m_bodyRect.setSize(Vector2f(m_size - 1, m_size - 1));
+	m_bodyRect.setSize(sf::Vector2f(static_cast<float>(m_size - 1), static_cast<float>(m_size - 1)));
 	Reset();
 }
 
 Snake::~Snake()
 {
-}
-
-void Snake::Reset()
-{
-	m_snakeBody.clear(); // clear the snake segment vector from the previous game
-	
-	m_snakeBody.push_back(SnakeSegment(5, 7)); // Head of the snake
-	m_snakeBody.push_back(SnakeSegment(5, 6)); // Head and body of the snake
-	m_snakeBody.push_back(SnakeSegment(5, 5)); // Full structure of the snake
-
-	SetDirection(Direction::None); // No movement until a player presses a key to move the snake. 
-	m_speed = 15;
-	m_lives = 3;
-	m_score = 0;
-	m_lost = false;
 }
 
 void Snake::SetDirection(Direction l_dir)
@@ -45,15 +22,30 @@ Direction Snake::GetDirection()
 	return m_dir;
 }
 
+Direction Snake::GetPhysicalDirection()
+{
+	if (m_snakeBody.size() <= 1)
+		return Direction::None;
+
+	SnakeSegment & head = m_snakeBody[0];
+	SnakeSegment & neck = m_snakeBody[1];
+
+	if (head.position.x == neck.position.x)
+		return (head.position.y > neck.position.y ? Direction::Down : Direction::Up);
+	else if (head.position.y == neck.position.y)
+		return (head.position.x > neck.position.x ? Direction::Right : Direction::Left);
+
+	return Direction::None;
+}
+
 int Snake::GetSpeed()
 {
 	return m_speed;
 }
 
-Vector2i Snake::GetPosition()
+sf::Vector2i Snake::GetPosition()
 {
-	return(!m_snakeBody.empty() ?
-		m_snakeBody.front().position : Vector2i(1, 1));
+	return (!m_snakeBody.empty() ? m_snakeBody.front().position : sf::Vector2i(1, 1));
 }
 
 int Snake::GetLives()
@@ -66,9 +58,14 @@ int Snake::GetScore()
 	return m_score;
 }
 
+int Snake::GetLength()
+{
+	return m_snakeBody.size();
+}
+
 void Snake::IncreaseScore()
 {
-	m_score += 10; 
+	m_score += 10;
 }
 
 bool Snake::HasLost()
@@ -88,10 +85,11 @@ void Snake::ToggleLost()
 
 void Snake::Extend()
 {
-	if(m_snakeBody.empty()) { return; }
-	
-	SnakeSegment& tail_head = m_snakeBody[m_snakeBody.size() - 1];
-	
+	if (m_snakeBody.empty())
+		return;
+
+	SnakeSegment & tail_head = m_snakeBody[m_snakeBody.size() - 1];
+
 	if (m_snakeBody.size() > 1)
 	{
 		SnakeSegment & tail_bone = m_snakeBody[m_snakeBody.size() - 2];
@@ -118,124 +116,132 @@ void Snake::Extend()
 			}
 		}
 	}
-	else {
-
-		if (m_dir == Direction::Up) 
+	else
+	{
+		switch (m_dir)
 		{
+		case Direction::Up:
 			m_snakeBody.push_back(SnakeSegment(tail_head.position.x, tail_head.position.y + 1));
-		}
-		else if (m_dir == Direction::Down) 
-		{
+			break;
+		case Direction::Down:
 			m_snakeBody.push_back(SnakeSegment(tail_head.position.x, tail_head.position.y - 1));
-		}
-		else if (m_dir == Direction::Left)
-		{
-			m_snakeBody.push_back(SnakeSegment(tail_head.position.x + 1, tail_head.position.y));
-		}
-		else if (m_dir == Direction::Right)
-		{
+			break;
+		case Direction::Left:
 			m_snakeBody.push_back(SnakeSegment(tail_head.position.x - 1, tail_head.position.y));
+			break;
+		case Direction::Right:
+			m_snakeBody.push_back(SnakeSegment(tail_head.position.x + 1, tail_head.position.y));
+			break;
+		default:
+			break;
 		}
 	}
 }
 
-// fixed time-step 
-void Snake::Tick()
+void Snake::Reset()
 {
+	m_snakeBody.clear();
 
-	if (m_snakeBody.empty())  return;  // to check for movement 
-	
-	if (m_dir == Direction::None)  return;  // to check for movement 
-	
-	Move();
-	CheckCollision();
+	m_snakeBody.push_back(SnakeSegment(5, 7));
+	m_snakeBody.push_back(SnakeSegment(5, 6));
+	m_snakeBody.push_back(SnakeSegment(5, 5));
+
+	SetDirection(Direction::None);	// start off still
+
+
+	m_speed = 15;
+	m_lives = 3;
+	m_score = 0;
+	m_lost = false;
+
 
 }
 
 void Snake::Move()
 {
-
-	for (int i = m_snakeBody.size() - 1; i < 0; --i)
-	{
+	for (int i = m_snakeBody.size() - 1; i > 0; --i)
 		m_snakeBody[i].position = m_snakeBody[i - 1].position;
-	}
 
-	if (m_dir == Direction::Left) 
+	switch (m_dir)
 	{
-		--m_snakeBody[0].position.x;
-	}
-	else if (m_dir == Direction::Right) 
-	{
-		++m_snakeBody[0].position.x;
-	}
-	else if (m_dir == Direction::Up)  
-	{
-		--m_snakeBody[0].position.y; 
-	}
-	else if (m_dir == Direction::Down)
-	{
+	case Direction::Up:
+		--m_snakeBody[0].position.y;
+		break;
+	case Direction::Down:
 		++m_snakeBody[0].position.y;
+		break;
+	case Direction::Left:
+		--m_snakeBody[0].position.x;
+		break;
+	case Direction::Right:
+		++m_snakeBody[0].position.x;
+		break;
+	default:
+		break;
 	}
-
 }
 
-// check if snake collides against itself
+void Snake::Tick()
+{
+	if (m_snakeBody.empty())
+		return;
+
+	if (m_dir == Direction::None)
+		return;
+
+	Move();
+	CheckCollision();
+}
+
+void Snake::Cut(int l_segments)
+{
+	for (int i = 0; i < l_segments; ++i)
+		m_snakeBody.pop_back();
+
+	--m_lives;
+
+
+	if (!m_lives)
+	{
+		Lose();
+		return;
+	}
+}
+
+void Snake::Render(sf::RenderWindow & l_window)
+{
+	if (m_snakeBody.empty())
+		return;
+
+	auto head = m_snakeBody.begin();
+
+	m_bodyRect.setFillColor(sf::Color(183, 209, 103, 255));
+	m_bodyRect.setPosition(static_cast<float>(head->position.x * m_size), static_cast<float>(head->position.y * m_size));
+	l_window.draw(m_bodyRect);
+
+	m_bodyRect.setFillColor(sf::Color(58, 170, 53, 255));
+	for (auto itr = m_snakeBody.begin() + 1; itr != m_snakeBody.end(); ++itr)
+	{
+		m_bodyRect.setPosition(static_cast<float>(itr->position.x * m_size), static_cast<float>(itr->position.y * m_size));
+		l_window.draw(m_bodyRect);
+	}
+}
+
+// snake collides with itself
 void Snake::CheckCollision()
 {
+	if (m_snakeBody.size() < 5)	// no need to check for collisions if there are four or less segments
+		return;
 
-	// no check for collision if size < 4
-	if (m_snakeBody.size() < 5) return;
+	SnakeSegment & head = m_snakeBody.front();
 
-	// reference to the head of the snake
-	SnakeSegment& head = m_snakeBody.front();
-
-	/*******************************************************************
-	No need for checking collision between all parts more than once.
-	We skip iteration for the head of the snake.
-	Collision check is done by comparing the position of the head 
-	to the position of the current segment identified by the iterator. 
-	*******************************************************************/
 	for (auto itr = m_snakeBody.begin() + 1; itr != m_snakeBody.end(); ++itr)
 	{
 		if (itr->position == head.position)
 		{
-			int segments = m_snakeBody.end() - itr; 
+			int segments = m_snakeBody.end() - itr;
 			Cut(segments);
 			break;
 		}
-	}
-}
-void Snake::Cut(int l_segments)
-{
-	for (int i = 0; i < l_segments; ++i)
-	{
-		m_snakeBody.pop_back();
-	}
-	--m_lives;
-	if (!m_lives) 
-	{ 
-		Lose(); 
-		return; 
-	}
-}
-
-
-void Snake::Render(RenderWindow& l_window)
-{
-	if (m_snakeBody.empty()) { return; }
-
-	// the head of the snake
-	auto head = m_snakeBody.begin();
-	m_bodyRect.setFillColor(Color::Yellow);
-	m_bodyRect.setFillColor(Color::Yellow);
-	m_bodyRect.setPosition(head->position.x * m_size, head->position.y * m_size);
-	l_window.draw(m_bodyRect);
-
-	// the body of the snake
-	m_bodyRect.setFillColor(Color::Green);
-	for (auto itr = m_snakeBody.begin() + 1; itr != m_snakeBody.end(); ++itr)
-	{
-		m_bodyRect.setPosition(itr->position.x * m_size, itr->position.y * m_size);
-		l_window.draw(m_bodyRect);
 	}
 }

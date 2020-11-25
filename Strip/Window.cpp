@@ -1,10 +1,9 @@
 #include "pch.h"
-#include "Window.h"
-
+#include "window.h"
 
 Window::Window()
 {
-	Setup("Window", sf::Vector2u(1080, 720));
+	Setup("Window", sf::Vector2u(640, 480));
 }
 
 Window::Window(const std::string & l_title, const sf::Vector2u & l_size)

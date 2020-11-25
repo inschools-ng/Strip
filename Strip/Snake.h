@@ -1,40 +1,21 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include <string>
-#include <vector>
-
-#include "SFML/Graphics.hpp"
-#include <string>
 
 
-using namespace std;
-using namespace sf;
-
-
-struct SnakeSegment {
-	SnakeSegment (int x, int y) 
+struct SnakeSegment
+{
+	SnakeSegment(int x, int y)
 		: position(x, y)
 	{
-
 	}
 
-	Vector2i position;
+	sf::Vector2i position;
 };
 
 using SnakeContainer = std::vector<SnakeSegment>;
 
-enum class Direction {None, Up, Down, Left, Right };
-
-Direction ::Direction ()
-{
-	
-}
-
-Direction ::~Direction ()
-{
-
-}
+enum class Direction { None, Up, Down, Left, Right };
 
 class Snake
 {
@@ -42,38 +23,38 @@ public:
 	Snake(int l_blockSize);
 	~Snake();
 
-	// Helper methods.
+	// helper methods
 	void SetDirection(Direction l_dir);
 	Direction GetDirection();
+	Direction GetPhysicalDirection();
 	int GetSpeed();
-	Vector2i GetPosition();
+	sf::Vector2i GetPosition();
 	int GetLives();
 	int GetScore();
+	int GetLength();
 	void IncreaseScore();
 	bool HasLost();
 
-	void Lose(); // Handle losing here.
+	void Lose();					// handle losing here
 	void ToggleLost();
 
-	void Extend(); // Grow the snake.
-	void Reset(); // Reset to the starting position
-	
-	void Move(); // Movement method. 
-	void Tick(); // Update method. 
+	void Extend();					// grow the snake
+	void Reset();					// reset to starting position
 
-	void Cut(int l_segments); // Method for cutting snake.
-	void Render(RenderWindow& l_window);
+	void Move();					// movement method
+	void Tick();					// update method
+	void Cut(int l_segments);		// method for cutting the snake
+	void Render(sf::RenderWindow & l_window);
 
 private:
-	void CheckCollision(); // Checking for collisions.
+	void CheckCollision();			// checking for collisions with the snake
 
-	SnakeContainer m_snakeBody;	// Segment vector
-	int m_size; // Size of the graphics.
-	Direction m_dir; // Current direction
-	int m_speed; // Speed of the snake
-	int m_lives; // Lives
-	int m_score; // Score
-	bool m_lost; // Losing state
-	RectangleShape m_bodyRect; // Shape used in rendering
+	SnakeContainer m_snakeBody;		// segment vector
+	int m_size;						// size of the graphics
+	Direction m_dir;				// current direction
+	int m_speed;					// speed of the snake
+	int m_lives;					// lives
+	int m_score;					// score
+	bool m_lost;					// losing state
+	sf::RectangleShape m_bodyRect;	// shape used in rendering
 };
-
